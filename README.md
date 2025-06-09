@@ -1,4 +1,4 @@
-# Python Plugin Template
+# Python Plugin canutils
 
 This plugin serves as a template from which new plugins can be built.
 
