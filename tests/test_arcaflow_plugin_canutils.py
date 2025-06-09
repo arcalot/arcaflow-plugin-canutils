@@ -9,9 +9,7 @@ class HelloWorldTest(unittest.TestCase):
     def test_serialization():
         plugin.test_object_serialization(canutils_plugin.InputParams("John Doe"))
 
-        plugin.test_object_serialization(
-            canutils_plugin.SuccessOutput("Hello, world!")
-        )
+        plugin.test_object_serialization(canutils_plugin.SuccessOutput("Hello, world!"))
 
         plugin.test_object_serialization(
             canutils_plugin.ErrorOutput(error="This is an error")

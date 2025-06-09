@@ -1,42 +1,77 @@
 #!/usr/bin/env python3
 
+import subprocess
 import sys
 import typing
 from arcaflow_plugin_sdk import plugin
+
+# This now imports the new Annotated schemas
 from canutils_schema import (
-    InputParams,
+    CanplayerInput,
+    CansendInput,
     SuccessOutput,
     ErrorOutput,
 )
 
 
 @plugin.step(
-    id="hello-world",
-    name="Hello world!",
-    description="Says hello :)",
+    id="player",
+    name="Run canplayer",
+    description="Replays a CAN log file to a CAN interface.",
     outputs={"success": SuccessOutput, "error": ErrorOutput},
 )
-def hello_world(
-    params: InputParams,
+def run_canplayer(
+    params: CanplayerInput,
 ) -> typing.Tuple[str, typing.Union[SuccessOutput, ErrorOutput]]:
-    """The function is the implementation for the step. It needs the decorator
-    above to make it into a step. The type hints for the params are required.
+    cmd = ["canplayer", "-I", params.logfile]
 
-    :param params:
+    if params.verbose:
+        cmd.append("-v")
 
-    :return: the string identifying which output it is, as well the output
-        structure
-    """
+    if params.infinite_loop:
+        cmd.extend(["-l", "i"])
+    elif params.loop_count > 1:
+        cmd.extend(["-l", str(params.loop_count)])
 
-    return "success", SuccessOutput("Hello, {}!".format(params.name))
+    if params.interface:
+        cmd.append(params.interface)
+
+    print(cmd)
+
+    try:
+        process = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return "success", SuccessOutput(process.stdout, process.stderr)
+    except FileNotFoundError:
+        return "error", ErrorOutput(1, "'canplayer' not found.")
+    except subprocess.CalledProcessError as e:
+        return "error", ErrorOutput(e.returncode, e.stderr)
+
+
+@plugin.step(
+    id="sender",
+    name="Run cansend",
+    description="Sends a single CAN frame to an interface.",
+    outputs={"success": SuccessOutput, "error": ErrorOutput},
+)
+def run_cansend(
+    params: CansendInput,
+) -> typing.Tuple[str, typing.Union[SuccessOutput, ErrorOutput]]:
+    cmd = ["cansend", params.interface, params.frame]
+    try:
+        process = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        return "success", SuccessOutput(process.stdout, process.stderr)
+    except FileNotFoundError:
+        return "error", ErrorOutput(1, "'cansend' not found.")
+    except subprocess.CalledProcessError as e:
+        return "error", ErrorOutput(e.returncode, e.stderr)
 
 
 if __name__ == "__main__":
     sys.exit(
         plugin.run(
             plugin.build_schema(
-                # List your step functions here:
-                hello_world,
+                run_canplayer,
+                run_cansend,
             )
         )
     )
