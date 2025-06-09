@@ -23,13 +23,14 @@ RUN python -m poetry install --without dev --no-root \
 
 COPY ${package}/ /app/${package}
 COPY tests /app/${package}/tests
+COPY inputs /app/${package}/inputs
 
 ENV PYTHONPATH /app/${package}
 WORKDIR /app/${package}
 
 # Run tests and return coverage analysis
-# RUN python -m coverage run tests/test_${package}.py \
-#  && python -m coverage html -d /htmlcov --omit=/usr/local/*
+RUN python -m coverage run tests/test_${package}.py \
+ && python -m coverage html -d /htmlcov --omit=/usr/local/*
 
 
 # STAGE 2 -- Build final plugin image
@@ -43,7 +44,7 @@ RUN dnf install -y dnf-utils && \
     dnf clean all
 
 COPY --from=build /app/requirements.txt /app/
-# COPY --from=build /htmlcov /htmlcov/
+COPY --from=build /htmlcov /htmlcov/
 COPY LICENSE /app/
 COPY README.md /app/
 COPY ${package}/ /app/${package}

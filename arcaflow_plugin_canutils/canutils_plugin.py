@@ -102,7 +102,7 @@ class CanplayerStep:
             except Exception:
                 process.terminate()
                 stdout, stderr = process.communicate(timeout=5)
-        
+
         return "success", SuccessOutput(stdout, stderr)
 
 
