@@ -35,6 +35,11 @@ class CanplayerInput:
         schema.name("Log File"),
         schema.description("Path to the CAN log file to be replayed."),
     ]
+    timeout: Annotated[
+        Optional[int],
+        schema.name("Timeout seconds"),
+        schema.description("Timeout in seconds after which to cancel the run"),
+    ] = None
     interface: Annotated[
         Optional[str],
         schema.name("CAN Interface"),

@@ -1,4 +1,4 @@
-#interface: "vcan0"
 logfile: "/example_workload.log"
-# infinite_loop: true
+infinite_loop: false
+loop_count: 5
 verbose: true
