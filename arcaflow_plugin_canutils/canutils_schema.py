@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional
 
 from arcaflow_plugin_sdk import schema
 
