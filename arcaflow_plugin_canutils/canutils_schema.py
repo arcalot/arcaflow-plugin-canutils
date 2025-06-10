@@ -64,7 +64,7 @@ class CanplayerInput:
         bool,
         schema.name("Verbose Output"),
         schema.description("Enable verbose output (-v) from canplayer."),
-    ] = False
+    ] = True
 
 
 @dataclass
