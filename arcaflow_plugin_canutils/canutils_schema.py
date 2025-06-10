@@ -40,6 +40,7 @@ class CanplayerInput:
         schema.name("Timeout seconds"),
         schema.description("Timeout in seconds after which to cancel the run"),
     ] = None
+    # FIXME We aren't implementing the interface correctly yet
     interface: Annotated[
         Optional[str],
         schema.name("CAN Interface"),
