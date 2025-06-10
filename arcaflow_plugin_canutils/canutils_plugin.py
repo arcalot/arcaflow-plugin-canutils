@@ -3,7 +3,6 @@
 import subprocess
 import sys
 import time
-import signal
 import typing
 import threading
 from threading import Event
@@ -115,8 +114,12 @@ class CanplayerStep:
             stderr = "".join(stderr_lines)
 
         # If we exited due to interrupt or error, return error, else success
-        if self.exit.is_set() or (params.timeout and (time.time() - start_time) > params.timeout):
-            return "error", ErrorOutput(1, "Stopped by user or timeout.\n" + stdout + stderr)
+        if self.exit.is_set() or (
+            params.timeout and (time.time() - start_time) > params.timeout
+        ):
+            return "error", ErrorOutput(
+                1, "Stopped by user or timeout.\n" + stdout + stderr
+            )
         return "success", SuccessOutput(stdout, stderr)
 
 
