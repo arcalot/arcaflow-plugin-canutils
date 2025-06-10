@@ -123,7 +123,7 @@ class PluginFunctionTest(unittest.TestCase):
         # Test case 1: Basic execution
         params = plugin.CanplayerInput(interface="vcan0", logfile="test.log")
         plugin.CanplayerStep.run_canplayer(params=params, run_id="ci")
-        expected_cmd = ['stdbuf', '-oL', "canplayer", "-I", "test.log", "-v", "vcan0"]
+        expected_cmd = ["stdbuf", "-oL", "canplayer", "-I", "test.log", "-v", "vcan0"]
         mock_popen.assert_called_with(
             expected_cmd,
             stdout=subprocess.PIPE,
@@ -132,9 +132,11 @@ class PluginFunctionTest(unittest.TestCase):
         )
 
         # Test case 2: Verbose flag off
-        params = plugin.CanplayerInput(interface="vcan0", logfile="t.log", verbose=False)
+        params = plugin.CanplayerInput(
+            interface="vcan0", logfile="t.log", verbose=False
+        )
         plugin.CanplayerStep.run_canplayer(params=params, run_id="ci")
-        expected_cmd = ['stdbuf', '-oL', "canplayer", "-I", "t.log", "vcan0"]
+        expected_cmd = ["stdbuf", "-oL", "canplayer", "-I", "t.log", "vcan0"]
         mock_popen.assert_called_with(
             expected_cmd,
             stdout=subprocess.PIPE,
@@ -147,7 +149,17 @@ class PluginFunctionTest(unittest.TestCase):
             interface="vcan1", logfile="t.log", infinite_loop=True, loop_count=5
         )
         plugin.CanplayerStep.run_canplayer(params=params, run_id="ci")
-        expected_cmd = ['stdbuf', '-oL', "canplayer", "-I", "t.log", "-v", "-l", "i", "vcan1"]
+        expected_cmd = [
+            "stdbuf",
+            "-oL",
+            "canplayer",
+            "-I",
+            "t.log",
+            "-v",
+            "-l",
+            "i",
+            "vcan1",
+        ]
         mock_popen.assert_called_with(
             expected_cmd,
             stdout=subprocess.PIPE,
@@ -158,7 +170,17 @@ class PluginFunctionTest(unittest.TestCase):
         # Test case 4: Counted loop
         params = plugin.CanplayerInput(interface="can0", logfile="t.log", loop_count=10)
         plugin.CanplayerStep.run_canplayer(params=params, run_id="ci")
-        expected_cmd = ['stdbuf', '-oL', "canplayer", "-I", "t.log", "-v", "-l", "10", "can0"]
+        expected_cmd = [
+            "stdbuf",
+            "-oL",
+            "canplayer",
+            "-I",
+            "t.log",
+            "-v",
+            "-l",
+            "10",
+            "can0",
+        ]
         mock_popen.assert_called_with(
             expected_cmd,
             stdout=subprocess.PIPE,
