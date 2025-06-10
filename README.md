@@ -66,7 +66,7 @@ Replays a CAN log file to a CAN interface.
 </tr>
 </tbody></table>
             </details><details><summary>verbose (<code>bool</code>)</summary>
-                <table><tbody><tr><th>Name:</th><td>Verbose Output</td></tr><tr><th>Description:</th><td width="500">Enable verbose output (-v) from canplayer.</td></tr><tr><th>Required:</th><td>No</td></tr><tr><th>Default (JSON encoded):</th><td><pre><code>false</code></pre></td></tr><tr><th>Type:</th><td><code>bool</code></td></tr>
+                <table><tbody><tr><th>Name:</th><td>Verbose Output</td></tr><tr><th>Description:</th><td width="500">Enable verbose output (-v) from canplayer.</td></tr><tr><th>Required:</th><td>No</td></tr><tr><th>Default (JSON encoded):</th><td><pre><code>true</code></pre></td></tr><tr><th>Type:</th><td><code>bool</code></td></tr>
 </tbody></table>
             </details></td></tr>
 <tr><td colspan="2"><details><summary><strong>Objects</strong></summary><details><summary>CanplayerInput (<code>object</code>)</summary>
@@ -88,7 +88,7 @@ Replays a CAN log file to a CAN interface.
 </tr>
 </tbody></table>
         </details><details><summary>verbose (<code>bool</code>)</summary>
-        <table><tbody><tr><th>Name:</th><td>Verbose Output</td></tr><tr><th>Description:</th><td width="500">Enable verbose output (-v) from canplayer.</td></tr><tr><th>Required:</th><td>No</td></tr><tr><th>Default (JSON encoded):</th><td><pre><code>false</code></pre></td></tr><tr><th>Type:</th><td><code>bool</code></td></tr>
+        <table><tbody><tr><th>Name:</th><td>Verbose Output</td></tr><tr><th>Description:</th><td width="500">Enable verbose output (-v) from canplayer.</td></tr><tr><th>Required:</th><td>No</td></tr><tr><th>Default (JSON encoded):</th><td><pre><code>true</code></pre></td></tr><tr><th>Type:</th><td><code>bool</code></td></tr>
 </tbody></table>
         </details></td></tr>
 </tr>
