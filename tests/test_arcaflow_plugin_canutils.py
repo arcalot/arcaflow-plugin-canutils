@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+Unit tests for canutils_plugin.
+"""
+
 import unittest
+from unittest.mock import MagicMock, patch
 import subprocess
 import canutils_plugin as plugin
-from unittest.mock import patch, MagicMock
-
 import arcaflow_plugin_sdk
 
 
@@ -96,15 +99,25 @@ class PluginFunctionTest(unittest.TestCase):
     isolate the functions from the underlying subprocess calls.
     """
 
+    @staticmethod
+    def make_mock_stream(lines):
+        """
+        Create a mock stream that returns lines via readline().
+        """
+        stream = MagicMock()
+        stream.readline = MagicMock(side_effect=lines + [""])
+        stream.close = MagicMock()
+        return stream
+
     @patch("subprocess.Popen")
     def test_run_canplayer_command_construction(self, mock_popen):
         """
         Tests that canplayer is called with the correct arguments based on inputs.
         """
-        # Set up the mock process
         mock_process = MagicMock()
-        mock_process.poll.return_value = 0  # Simulate process exited
-        mock_process.communicate.return_value = ("mocked stdout", "mocked stderr")
+        mock_process.poll.return_value = 0
+        mock_process.stdout = self.make_mock_stream(["line1\n", "line2\n"])
+        mock_process.stderr = self.make_mock_stream(["err1\n"])
         mock_popen.return_value = mock_process
 
         # Test case 1: Basic execution

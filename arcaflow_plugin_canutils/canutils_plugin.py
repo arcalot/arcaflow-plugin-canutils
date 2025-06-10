@@ -5,6 +5,7 @@ import sys
 import time
 import signal
 import typing
+import threading
 from threading import Event
 from arcaflow_plugin_sdk import plugin, predefined_schemas
 
@@ -59,11 +60,28 @@ class CanplayerStep:
         if params.interface:
             cmd.append(params.interface)
 
+        def read_stream(stream, buffer):
+            for line in iter(stream.readline, ""):
+                buffer.append(line)
+            stream.close()
+
         try:
             print("Gathering data... Use Ctrl-C to stop.")
+            stdout_lines = []
+            stderr_lines = []
+
             process = subprocess.Popen(
                 cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
             )
+
+            stdout_thread = threading.Thread(
+                target=read_stream, args=(process.stdout, stdout_lines)
+            )
+            stderr_thread = threading.Thread(
+                target=read_stream, args=(process.stderr, stderr_lines)
+            )
+            stdout_thread.start()
+            stderr_thread.start()
 
             start_time = time.time()
             while True:
@@ -75,16 +93,14 @@ class CanplayerStep:
                 ):
                     # Cancel signal received or timeout reached
                     print("Stopping data collection due to timeout or cancel signal.")
-                    process.send_signal(signal.SIGINT)
-                    time.sleep(0.5)  # Give the process a moment to flush output
-                    try:
-                        stdout, stderr = process.communicate(timeout=5)
-                    except Exception:
-                        process.terminate()
+                    process.terminate()
+                    break
                 time.sleep(0.1)
 
-            # Process exited on its own, collect output and continue
-            stdout, stderr = process.communicate(timeout=5)
+            stdout_thread.join()
+            stderr_thread.join()
+            stdout = "".join(stdout_lines)
+            stderr = "".join(stderr_lines)
             return "success", SuccessOutput(stdout, stderr)
 
         except FileNotFoundError:
