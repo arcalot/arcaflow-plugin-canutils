@@ -86,22 +86,14 @@ class CanplayerStep:
             start_time = time.time()
             while True:
                 if process.poll() is not None:
-                    # Process exited on its own
                     break
                 if self.exit.is_set() or (
                     params.timeout and (time.time() - start_time) > params.timeout
                 ):
-                    # Cancel signal received or timeout reached
                     print("Stopping data collection due to timeout or cancel signal.")
                     process.terminate()
                     break
                 time.sleep(0.1)
-
-            stdout_thread.join()
-            stderr_thread.join()
-            stdout = "".join(stdout_lines)
-            stderr = "".join(stderr_lines)
-            return "success", SuccessOutput(stdout, stderr)
 
         except FileNotFoundError:
             return "error", ErrorOutput(1, "'canplayer' not found.")
@@ -111,14 +103,20 @@ class CanplayerStep:
             )
         except (KeyboardInterrupt, SystemExit):
             print("\nReceived keyboard interrupt; Stopping data collection.\n")
-            process.send_signal(signal.SIGINT)
-            time.sleep(0.5)  # Give the process a moment to flush output
+            process.terminate()
+        finally:
+            # Always join threads and collect output, even after interrupt
             try:
-                stdout, stderr = process.communicate(timeout=5)
+                stdout_thread.join(timeout=2)
+                stderr_thread.join(timeout=2)
             except Exception:
-                process.terminate()
-                stdout, stderr = process.communicate(timeout=5)
+                pass
+            stdout = "".join(stdout_lines)
+            stderr = "".join(stderr_lines)
 
+        # If we exited due to interrupt or error, return error, else success
+        if self.exit.is_set() or (params.timeout and (time.time() - start_time) > params.timeout):
+            return "error", ErrorOutput(1, "Stopped by user or timeout.\n" + stdout + stderr)
         return "success", SuccessOutput(stdout, stderr)
 
 
